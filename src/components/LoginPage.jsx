@@ -1,4 +1,5 @@
 import { LockClosedIcon } from '@heroicons/react/24/solid';
+import { useRouter } from 'next/router';
 import { useRef } from 'react';
 import { useAuth } from '@hooks/useAuth';
 
@@ -6,15 +7,32 @@ export default function LoginPage() {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const auth = useAuth();
+  const router = useRouter();
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
-    auth.signIn(email, password).then(() => {
-      console.log('Login success');
-    });
+    auth.signIn(email, password).then(
+      () => {
+        if (auth.error === true) {
+          auth.setError(false);
+        }
+
+        router.push('/dashboard');
+      },
+      (error) => {
+        const {
+          response: { status },
+        } = error;
+        console.log('Login failed');
+
+        if (status === 401) {
+          auth.setError(true);
+        }
+      }
+    );
   };
 
   return (
@@ -74,6 +92,14 @@ export default function LoginPage() {
                 </a>
               </div>
             </div>
+
+            {!auth.error ? (
+              ''
+            ) : (
+              <div className="flex items-center justify-center bg-red-300 rounded-lg p-4">
+                <p className="text-red-500 font-semibold">Sorry, your account doesn&apos;t exist. Please log in with an created account.</p>
+              </div>
+            )}
 
             <div>
               <button
