@@ -20,6 +20,9 @@ export default function LoginPage() {
           auth.setError(false);
         }
 
+        if (auth.user === null) {
+          return;
+        }
         router.push('/dashboard');
       },
       (error) => {

@@ -1,3 +1,4 @@
+// components
 import Header from '@components/Header';
 import Nav from '@common/Nav';
 
